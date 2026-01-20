@@ -15,19 +15,7 @@ def simulate_synchronous_am_demodulation(
 	lpf_cutoff: float = 5_000.0,
 	butter_order: int = 2,
 ):
-	"""Simulate AM generation and synchronous (coherent) demodulation.
-
-	Notes
-	-----
-	The lab handout states:
-	  s(t) = [A_c + m(t)] cos(2π f_c t)
-	but also separately specifies a modulation index μ=0.8 while using A_m=1 V
-	and A_c=2 V. In standard AM (DSB-LC), μ is typically defined with a
-	*normalized* message: s(t)=A_c(1+μ m_norm(t))cos(2π f_c t), where |m_norm|<=1.
-
-	This implementation uses that standard definition so μ is exactly the
-	modulation index.
-	"""
+	
 
 	if fs <= 2 * max(f_c * 2, lpf_cutoff):
 		raise ValueError("Sampling frequency fs is too low for the chosen f_c/cutoff.")
