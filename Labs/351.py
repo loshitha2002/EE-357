@@ -1,33 +1,43 @@
-import matplotlib.pyplot as plt
 import numpy as np
-from scipy.interpolate import make_interp_spline
+import matplotlib.pyplot as plt
+from scipy.interpolate import UnivariateSpline
 
-# Data from your table
-vcc = np.array([0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15])
-vp = np.array([0, 0, 1, 2, 3, 4, 5, 6, 7, 8, 8, 8, 8, 8, 9, 10])
+# 1. Data extracted exactly from your hand-drawn graph (image_342e40)
+vcc_volts = np.array([0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15])
+amplitude_vp = np.array([0, 0, 1, 2, 3, 4, 5, 6, 7, 8, 8, 8, 8, 8, 9, 10])
 
-# Create a smooth curve using spline interpolation
-X_Y_Spline = make_interp_spline(vcc, vp)
-X_smooth = np.linspace(vcc.min(), vcc.max(), 500)
-Y_smooth = X_Y_Spline(X_smooth)
+# 2. Create the "Hand-Drawn" Smooth Curve
+# UnivariateSpline acts like a French Curve. The 's' parameter controls the smoothness.
+# s=0.05 allows it to gently sweep through the points without oscillating.
+spline = UnivariateSpline(vcc_volts, amplitude_vp, s=2)
 
-# Create the plot
-plt.figure(figsize=(10, 6))
+# Generate high-resolution points for a perfectly smooth line
+vcc_smooth = np.linspace(vcc_volts.min(), vcc_volts.max(), 500)
+amplitude_smooth = spline(vcc_smooth)
 
-# Plot the smooth line and the actual data points
-plt.plot(X_smooth, Y_smooth, color='#4472C4', linestyle='-') # Smooth line
-plt.scatter(vcc, vp, color='#4472C4', zorder=5) # Data points
+# 3. Plotting the Graph
+plt.figure(figsize=(9, 6))
 
-# Add titles and labels to match your screenshot
-plt.xlabel('Supply Voltage Vcc (V)', fontsize=11)
-plt.ylabel('Output Amplitude Vp (V)', fontsize=11)
+# Plot the smooth curve (The sweeping line)
+plt.plot(vcc_smooth, amplitude_smooth, color='black', linewidth=1.5, label='Smooth Spline Fit')
 
-# Add grid lines (similar to the screenshot)
-plt.grid(True, linestyle='-', color='lightgrey')
-plt.xticks(range(0, 17, 2))
-plt.yticks(range(-2, 18, 2))
-plt.xlim(0, 16)
-plt.ylim(-2, 16)
+# Plot the individual data points (The circles)
+# facecolors='none' makes them look exactly like the open circles in your drawing!
+plt.scatter(vcc_volts, amplitude_vp, edgecolors='black', facecolors='none', s=60, zorder=5, label='Data Points')
 
-# Show the graph
+# 4. Formatting to match your image
+plt.title('FIGURE 4: VARIATION OF OUTPUT AMPLITUDE VS SUPPLY VOLTAGE', fontsize=12, fontweight='bold', loc='left')
+plt.xlabel('SUPPLY VOLTAGE (V)', fontsize=11, fontweight='bold')
+plt.ylabel('OUTPUT AMPLITUDE (V)', fontsize=11, fontweight='bold')
+
+# Set axis limits to fit all data
+plt.xlim(-0.5, 17)
+plt.ylim(-2, 11)
+
+# Create a fine grid that looks like graph paper
+plt.grid(True, which='both', linestyle='-', color='lightblue', alpha=0.7)
+plt.minorticks_on()
+plt.grid(True, which='minor', linestyle=':', color='lightblue', alpha=0.5)
+
+# Show the plot
 plt.show()
